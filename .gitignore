@@ -1,0 +1,6 @@
+.DS_Store
+public/
+slate
+content/
+templates/
+static/
