@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -247,6 +248,15 @@ func renderBlogIndex(tmpl *template.Template, posts []Page) error {
 }
 
 func generateHtml(markdownFiles []string) ([]Page, error) {
+	// Create goldmark with syntax highlighting
+	gm := goldmark.New(
+		goldmark.WithExtensions(
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("algol_nu"),
+			),
+		),
+	)
+
 	var pages []Page
 	for _, file := range markdownFiles {
 		content, err := os.ReadFile(file)
@@ -258,7 +268,7 @@ func generateHtml(markdownFiles []string) ([]Page, error) {
 		fm, markdown := parseFrontmatter(content)
 
 		var buf bytes.Buffer
-		if err := goldmark.Convert(markdown, &buf); err != nil {
+		if err := gm.Convert(markdown, &buf); err != nil {
 			return nil, err
 		}
 
@@ -470,8 +480,8 @@ const starterCSS = `
 }
 
 html {
-    font-size: 18px;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.2;
 }
 
 body {
